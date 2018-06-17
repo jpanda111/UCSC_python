@@ -30,6 +30,16 @@ Open source code under MIT license: http://www.opensource.org/licenses/mit-licen
 
 import re, collections
 
+def timeit(func):
+    import time
+    def wrapper(*args):
+        t = time.clock()
+        res = func(*args)
+        #print "The time to run the function: '%s' is %s seconds" %(func.func_name, time.clock()-t)
+        t1 = time.clock()-t
+        return res, t1
+    return wrapper
+
 class SpellCorrection:
     """
     Holds edit model, language model, corpus, trains
@@ -38,7 +48,8 @@ class SpellCorrection:
     def __init__(self, lm, corpus):
         self.lm = lm
         self.editModel = EditModel("./data/count_1edit.txt", corpus)
-        
+    
+    @timeit    
     def evaluation(self, corpus):
         
         """
@@ -116,7 +127,7 @@ class SpellCorrection:
         """
         Corrects the whole corpus, return a JSON representation of the output
         """   
-        
+
         string_list=[]
         sentences = corpus.corpus
         for sentence in sentences:
@@ -139,56 +150,74 @@ def main():
       testPath = './data/holbrook-tagged-dev.dat'
       testCorpus = HolbrookCorpus(testPath)
       
-      print('Custome Language Model: ')
-      CLM = CustomLM(trainCorpus)
-      CustomSpell = SpellCorrection(CLM, trainCorpus)
-      CustomOutput = CustomSpell.evaluation(testCorpus)
-      print(str(CustomOutput))
-      
-      print('Laplace Bigram Language Model: ')
-      LbigramLM = LaplaceBigramLM(trainCorpus)
-      LbigramSpell = SpellCorrection(LbigramLM, trainCorpus)
-      LbigramOutput = LbigramSpell.evaluation(testCorpus)
-      print(str(LbigramOutput))
-      
-      print('Laplace Trigram Language Model: ')
-      LtrigramLM = LaplaceTrigramLM(trainCorpus)
-      LtrigramSpell = SpellCorrection(LtrigramLM, trainCorpus)
-      LtrigramOutput = LtrigramSpell.evaluation(testCorpus)
-      print(str(LtrigramOutput))
-      
-      print('Uniform Language Model: ')
-      # train the language model
-      uniformLM = UniformLM(trainCorpus)
-      # use the language model, guess highest prob of corrected-sentence based on language models and train data
-      uniformSpell = SpellCorrection(uniformLM, trainCorpus)
-      # use test data to get accuracy
-      uniformOutput = uniformSpell.evaluation(testCorpus)
-      print(str(uniformOutput))
-      
-      print('Unigram Language Model: ')
-      unigramLM = UnigramLM(trainCorpus)
-      unigramSpell = SpellCorrection(unigramLM, trainCorpus)
-      unigramOutput = unigramSpell.evaluation(testCorpus)
-      print(str(unigramOutput))
-      
-      print('Laplace Unigram Language Model: ')
-      LunigramLM = LaplaceUnigramLM(trainCorpus)
-      LuniformSpell = SpellCorrection(LunigramLM, trainCorpus)
-      LunigramOutput = LuniformSpell.evaluation(testCorpus)
-      print(str(LunigramOutput))
-      
-      print('Stupid Backoff Language Model: ')
-      SBOLM = StupidBackoffLM(trainCorpus)
-      SBOSpell = SpellCorrection(SBOLM, trainCorpus)
-      SBOOutput = SBOSpell.evaluation(testCorpus)
-      print(str(SBOOutput))
-            
-      print('Kenser Ney Smoothing Language Model: ')
-      KNSLM = KenserNeySmoothingLM(trainCorpus)
-      KNSSpell = SpellCorrection(KNSLM, trainCorpus)
-      KNSOutput = KNSSpell.evaluation(testCorpus)
-      print(str(KNSOutput))
+      with open('ComparisonLM.log','w') as f:
+          f.write('Comparison of different language models: \n')
+          
+          f.write('Laplace Bigram Language Model: \n')
+          LbigramLM = LaplaceBigramLM(trainCorpus)
+          LbigramSpell = SpellCorrection(LbigramLM, trainCorpus)
+          LbigramOutput,t = LbigramSpell.evaluation(testCorpus)
+          f.write(str(LbigramOutput))
+          f.write('\nTime to run (seconds): ')
+          f.write(str(t)+'\n')
+          
+          f.write('Modified Kneser Ney Smoothing Language Model: \n')
+          CLM = CustomLM(trainCorpus)
+          CustomSpell = SpellCorrection(CLM, trainCorpus)
+          CustomOutput,t = CustomSpell.evaluation(testCorpus)
+          f.write(str(CustomOutput))
+          f.write(str(t)+'\n')
+          
+          f.write('Laplace Trigram Language Model: \n')
+          LtrigramLM = LaplaceTrigramLM(trainCorpus)
+          LtrigramSpell = SpellCorrection(LtrigramLM, trainCorpus)
+          LtrigramOutput,t = LtrigramSpell.evaluation(testCorpus)
+          f.write(str(LtrigramOutput))
+          f.write('\nTime to run (seconds): \n')
+          f.write(str(t)+'\n')
+          
+          f.write('Uniform Language Model: \n')
+          # train the language model
+          uniformLM = UniformLM(trainCorpus)
+          # use the language model, guess highest prob of corrected-sentence based on language models and train data
+          uniformSpell = SpellCorrection(uniformLM, trainCorpus)
+          # use test data to get accuracy
+          uniformOutput,t = uniformSpell.evaluation(testCorpus)
+          f.write(str(uniformOutput))
+          f.write('\nTime to run (seconds): \n')
+          f.write(str(t)+'\n')
+          
+          f.write('Unigram Language Model: \n')
+          unigramLM = UnigramLM(trainCorpus)
+          unigramSpell = SpellCorrection(unigramLM, trainCorpus)
+          unigramOutput,t = unigramSpell.evaluation(testCorpus)
+          f.write(str(unigramOutput))
+          f.write('\nTime to run (seconds): \n')
+          f.write(str(t)+'\n')
+          
+          f.write('Laplace Unigram Language Model: \n')
+          LunigramLM = LaplaceUnigramLM(trainCorpus)
+          LuniformSpell = SpellCorrection(LunigramLM, trainCorpus)
+          LunigramOutput,t = LuniformSpell.evaluation(testCorpus)
+          f.write(str(LunigramOutput))
+          f.write('\nTime to run (seconds): \n')
+          f.write(str(t)+'\n')
+          
+          f.write('Stupid Backoff Language Model: \n')
+          SBOLM = StupidBackoffLM(trainCorpus)
+          SBOSpell = SpellCorrection(SBOLM, trainCorpus)
+          SBOOutput,t = SBOSpell.evaluation(testCorpus)
+          f.write(str(SBOOutput))
+          f.write('\nTime to run (seconds): \n')
+          f.write(str(t)+'\n')
+                
+          f.write('Kenser Ney Smoothing Language Model: \n')
+          KNSLM = KenserNeySmoothingLM(trainCorpus)
+          KNSSpell = SpellCorrection(KNSLM, trainCorpus)
+          KNSOutput,t = KNSSpell.evaluation(testCorpus)
+          f.write(str(KNSOutput))
+          f.write('\nTime to run (seconds): \n')
+          f.write(str(t)+'\n')
       
 if __name__ == "__main__":
     main()
