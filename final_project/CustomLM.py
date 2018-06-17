@@ -1,17 +1,21 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Jun 16 13:54:29 2018
+Created on Sat Jun 16 18:16:38 2018
 
+@author: yinjiang
+"""
+
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Jun 16 13:54:29 2018
 @author: Dai
 Absolute Discounting Smoothing
 Pabs(wi∣wi−1)=max(c(wi−1wi)−δ,0)/∑w′c(wi−1w′) + α*Pabs(wi)
-
 The essence of Kneser-Ney is in the clever observation that we can take advantage 
 of this interpolation as a sort of backoff model. When the first term (in this case,
 the discounted relative bigram count) is near zero, the second term (the lower-order
 model) carries more weight. Inversely, when the higher-order model matches strongly,
 the second lower-order term has little weight.
-
 Replace Pabs(wi) to Pcontinuation(wi)
 Pcontinuation(wi)   = |{wi−1:c(wi−1,wi)>0}| / |{wj−1:c(wj−1,wj)>0}|
                     = # of bigrams which wi completes / # of total bigram types
@@ -19,7 +23,6 @@ Pcontinuation(wi)   = |{wi−1:c(wi−1,wi)>0}| / |{wj−1:c(wj−1,wj)>0}|
 Example:
 Pabs(Francisco) is high, it ansers how likely wi to appear
 Pcon(Francisco) is low, it answers how likely wi to appear in an unfamiliar bigram context
-
 Final Equation:
 PKN(wi∣wi−1) = first item + lambda * second item 
 where:
@@ -28,11 +31,11 @@ second item = Pcontinuation(wi) = |{wi−1:c(wi−1,wi)>0}| / |{wj−1:c(wj−1,
 lamda = λ(wi−1)=δ * |{w′:c(wi−1,w′)>0}| / c(wi-1)
 """
 
-import math, random
-from collections import Counter, defaultdict
-import itertools
+import math
+from collections import defaultdict
 
-class ModifiedKneserNeyLM(object):
+
+class CustomLM(object):
     
     def __init__(self, corpus):
         
@@ -47,8 +50,8 @@ class ModifiedKneserNeyLM(object):
         self.unigramCount = defaultdict(lambda:0)
         self.bigramCount = defaultdict(lambda: defaultdict(lambda: 0))
         self.reversebigramCount = defaultdict(lambda: defaultdict(lambda: 0))
-        self.lm = self.train(corpus)
         self.discounts = defaultdict(lambda: 0)
+        self.lm = self.train(corpus)
         
     def train(self, corpus):
         
@@ -140,7 +143,3 @@ class ModifiedKneserNeyLM(object):
         if count > 3:
             return discounts[3]
         return discounts[count]
-        
-        
-
-
