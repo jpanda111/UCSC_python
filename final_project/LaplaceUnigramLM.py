@@ -15,10 +15,11 @@ class LaplaceUnigramLM(object):
         Unigram Languange Model with add-one smoothing is implemented.
         """
         
-        self.LaplaceUnigramCounts = collections.defaultdict(lambda:0)
+        self.LaplaceUnigramCount = collections.defaultdict(lambda:0)
         #setdefault is faster and simpler with small data sets and has an advantage with more heterogeneous key sets;
         #defaultdict is faster for larger data sets with more homogenous key sets;
         self.total = 0
+        self.additional = 0
         self.train(corpus)
         
     def train(self, corpus):
@@ -29,9 +30,8 @@ class LaplaceUnigramLM(object):
         for sentence in corpus.corpus:
             for datum in sentence.data:
                 token = datum.word
-                self.LaplaceUnigramCounts[token] = self.LaplaceUnigramCounts[token] + 1
-                self.total +=1
-    
+                self.LaplaceUnigramCount[token] = self.LaplaceUnigramCount[token] + 1
+
     def score(self, sentence):
         """
         Takes a list of strings and returns the log-probability of the sentence
@@ -39,9 +39,11 @@ class LaplaceUnigramLM(object):
         In laplace Unigram language model, add-one smoothing technique applied to unseen words.
         """
         # total tokens inside language model, additional counts added when using add-one smoothing
-        additional = len(list(self.LaplaceUnigramCounts.items()))
+        self.additional = len(list(self.LaplaceUnigramCount.items()))
+        # total counts inside unigram model
+        self.total = sum(v for v in self.LaplaceUnigramCount.values())
         score = 0.0
         for token in sentence:
-            count = self.LaplaceUnigramCounts[token] + 1 # Add-one smoothing for unseen words
-            score = score + math.log(count) - math.log(self.total+additional) # need to consider additional add-one when calculate score
+            count = self.LaplaceUnigramCount[token] + 1 # Add-one smoothing for unseen words
+            score = score + math.log(count) - math.log(self.total + self.additional) # need to consider additional add-one when calculate score
         return score

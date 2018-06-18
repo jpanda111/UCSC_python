@@ -19,16 +19,11 @@ from LaplaceTrigramLM import LaplaceTrigramLM
 from LaplaceUnigramLM import LaplaceUnigramLM
 from StupidBackoffLM import StupidBackoffLM
 from KenserNeySmoothingLM import KenserNeySmoothingLM
-from CustomLM import CustomLM
-
+from ModifiedKneserNeyLM import MKneserNeyLM
 
 # Modified version of Peter Norvig's spelling corrector
-"""
-Spelling Corrector.
-Copyright 2007 Peter Norvig. 
-Open source code under MIT license: http://www.opensource.org/licenses/mit-license.php
-Added timer and generate log files for comparison.
-"""
+# Here is the link:
+# https://norvig.com/spell-correct.html
 
 import re, collections
 
@@ -102,10 +97,12 @@ class SpellCorrection:
                 sentence[i] = alternative
                 # get score of the corrected-sentence from language model
                 lmscore = self.lm.score(sentence)
-                if editscore != 0:
+                try:
                     editscore = math.log(editscore)
-                else:
+                except ValueError:
                     editscore = float('-inf')
+                    print word
+                    print " log-probabilities = 0, go check editModel output!"
                 # P_final=P(corrected_sentence)*P(corrected-word|misspelled-word);
                 score = lmscore + editscore
                 # find the highest one and store it
@@ -127,6 +124,15 @@ def main():
       """
       # generate a corpus include a list of sentence where corrected word(misspelled word), including start/stop symbol
       # example: <s> lucky (luckily) enough it was mostly tinned (tin) food </s>
+      
+      # use try-except to see if file exist or path is right
+      try: 
+          f = open("./data/holbrook-tagged-train.dat","r")
+          f.readlines()
+          f.close()
+      except IOError:
+          print "Files not found. Check if in the right directory path!"
+          
       trainPath = './data/holbrook-tagged-train.dat'
       trainCorpus = HolbrookCorpus(trainPath)
       testPath = './data/holbrook-tagged-dev.dat'
@@ -160,11 +166,19 @@ def main():
           f.write('\nTime to run (seconds): ')
           f.write(str(t)+'\n')
           
+          f.write('Laplace Trigram Language Model: \n')
+          LtrigramLM = LaplaceTrigramLM(trainCorpus)
+          LtrigramSpell = SpellCorrection(LtrigramLM, trainCorpus)
+          LtrigramOutput,t = LtrigramSpell.evaluation(testCorpus)
+          f.write(str(LtrigramOutput))
+          f.write('\nTime to run (seconds): ')
+          f.write(str(t)+'\n')
+          
           f.write('Modified Kneser Ney Smoothing Language Model: \n')
-          CLM = CustomLM(trainCorpus)
-          CustomSpell = SpellCorrection(CLM, trainCorpus)
-          CustomOutput,t = CustomSpell.evaluation(testCorpus)
-          f.write(str(CustomOutput))
+          MKNLM = MKneserNeyLM(trainCorpus)
+          MKNSpell = SpellCorrection(MKNLM, trainCorpus)
+          MKNOutput,t = MKNSpell.evaluation(testCorpus)
+          f.write(str(MKNOutput))
           f.write('\nTime to run (seconds): ')
           f.write(str(t)+'\n')
           
@@ -175,14 +189,7 @@ def main():
           f.write(str(SBOOutput))
           f.write('\nTime to run (seconds): ')
           f.write(str(t)+'\n')
-          
-          f.write('Laplace Trigram Language Model: \n')
-          LtrigramLM = LaplaceTrigramLM(trainCorpus)
-          LtrigramSpell = SpellCorrection(LtrigramLM, trainCorpus)
-          LtrigramOutput,t = LtrigramSpell.evaluation(testCorpus)
-          f.write(str(LtrigramOutput))
-          f.write('\nTime to run (seconds): ')
-          f.write(str(t)+'\n')
+
       
 if __name__ == "__main__":
     main()

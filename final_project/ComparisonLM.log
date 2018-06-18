@@ -1,31 +1,19 @@
 Comparison of different language models: 
-Laplace Bigram Language Model: 
-language model correct: 65 total 471 accuracy 0.138004 
-Time to run (seconds): 27.6284522805
-Modified Kneser Ney Smoothing Language Model: 
-language model correct: 112 total 471 accuracy 0.237792 
-Time to run (seconds): 155.771895346
-Stupid Backoff Language Model: 
-language model correct: 89 total 471 accuracy 0.188960 
-Time to run (seconds): 
-21.2802910425
-Kenser Ney Smoothing Language Model: 
-language model correct: 116 total 471 accuracy 0.246285 
-Time to run (seconds): 
-108.84290623
-Laplace Trigram Language Model: 
-language model correct: 33 total 471 accuracy 0.070064 
-Time to run (seconds): 
-23.4229701327
-Uniform Language Model: 
-language model correct: 31 total 471 accuracy 0.065817 
-Time to run (seconds): 
-2.65921255204
 Unigram Language Model: 
 language model correct: 29 total 471 accuracy 0.061571 
-Time to run (seconds): 
-9.47597850873
+Time to run (seconds): 5.66240580897
 Laplace Unigram Language Model: 
 language model correct: 52 total 471 accuracy 0.110403 
-Time to run (seconds): 
-27.0955830444
+Time to run (seconds): 24.393348954
+Laplace Bigram Language Model: 
+language model correct: 64 total 471 accuracy 0.135881 
+Time to run (seconds): 15.5396692547
+Laplace Trigram Language Model: 
+language model correct: 34 total 471 accuracy 0.072187 
+Time to run (seconds): 17.9441606081
+Modified Kneser Ney Smoothing Language Model: 
+language model correct: 112 total 471 accuracy 0.237792 
+Time to run (seconds): 67.236517507
+Stupid Backoff Language Model: 
+language model correct: 89 total 471 accuracy 0.188960 
+Time to run (seconds): 9.73225413959

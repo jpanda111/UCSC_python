@@ -16,6 +16,7 @@ class LaplaceBigramLM(object):
         """
         
         self.total = 0
+        self.additional = 0
         # set default value to be 0, the first arg must be callable, so you cannot do 0 directly but use lambda
         # for bigram, you do dict of dict to store last token and current token
         self.LaplaceBigramCount = collections.defaultdict(lambda: collections.defaultdict(lambda: 0))
@@ -34,7 +35,6 @@ class LaplaceBigramLM(object):
                 self.LaplaceUnigramCount[token]=self.LaplaceUnigramCount[token]+1
                 self.LaplaceBigramCount[lasttoken][token]=self.LaplaceBigramCount[lasttoken][token]+1
                 lasttoken = token
-                self.total += 1
     
     def score(self, sentence):
         """
@@ -44,9 +44,9 @@ class LaplaceBigramLM(object):
         """
         score = 0.0
         lasttoken = '&'
-        additional = len(self.LaplaceUnigramCount.items())
+        self.additional = len(list(self.LaplaceUnigramCount.items()))
         for token in sentence:
             count = self.LaplaceBigramCount[lasttoken][token]+1 # Add-one smoothing for unseen words
-            score = score + math.log(count) - math.log(self.LaplaceUnigramCount[token]+additional)
+            score = score + math.log(count) - math.log(self.LaplaceUnigramCount[token]+self.additional)
             lasttoken = token
         return score

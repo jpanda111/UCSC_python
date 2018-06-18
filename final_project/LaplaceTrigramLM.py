@@ -16,6 +16,7 @@ class LaplaceTrigramLM(object):
         """
         
         self.total = 0
+        self.additional = 0
         self.LaplaceTrigramCount = collections.defaultdict(lambda: collections.defaultdict(lambda: collections.defaultdict(lambda: 0)))
         self.LaplaceBigramCount = collections.defaultdict(lambda: collections.defaultdict(lambda: 0))
         self.LaplaceUnigramCount = collections.defaultdict(lambda: 0)
@@ -34,7 +35,6 @@ class LaplaceTrigramLM(object):
                 self.LaplaceUnigramCount[token]=self.LaplaceUnigramCount[token]+1
                 self.LaplaceBigramCount[lasttoken1][token]=self.LaplaceBigramCount[lasttoken1][token]+1
                 self.LaplaceTrigramCount[lasttoken2][lasttoken1][token]=self.LaplaceTrigramCount[lasttoken2][lasttoken1][token]+1
-                self.total += 1
                 lasttoken2 = lasttoken1
                 lasttoken1 = token
                 
@@ -44,12 +44,12 @@ class LaplaceTrigramLM(object):
         using the language model.
         """
         score = 0.0
-        additional = len(self.LaplaceUnigramCount.items())
+        self.additional = len(list(self.LaplaceBigramCount.items()))
         lasttoken1 = '&'
         lasttoken2 = '#'
         for token in sentence:
             count = self.LaplaceTrigramCount[lasttoken2][lasttoken1][token] + 1
-            score = score + math.log(count)-math.log(self.LaplaceBigramCount[lasttoken1][token] + additional)
+            score = score + math.log(count)-math.log(self.LaplaceBigramCount[lasttoken1][token] + self.additional)
             lasttoken2 = lasttoken1
             lasttoken1 = token
         return score

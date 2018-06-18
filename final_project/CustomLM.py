@@ -3,12 +3,7 @@
 Created on Sat Jun 16 18:16:38 2018
 
 @author: yinjiang
-"""
 
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Jun 16 13:54:29 2018
-@author: Dai
 Absolute Discounting Smoothing
 Pabs(wi∣wi−1)=max(c(wi−1wi)−δ,0)/∑w′c(wi−1w′) + α*Pabs(wi)
 The essence of Kneser-Ney is in the clever observation that we can take advantage 
