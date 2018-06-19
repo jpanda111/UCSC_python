@@ -28,13 +28,14 @@ class LaplaceBigramLM(object):
         Takes a corpus and trains your language model
         Compute any counts or other corpus statistics in this function
         """
-        lasttoken = '&'
+        lasttoken = '<s>'
         for sentence in corpus.corpus:
             for datum in sentence.data:
                 token = datum.word
                 self.LaplaceUnigramCount[token]=self.LaplaceUnigramCount[token]+1
                 self.LaplaceBigramCount[lasttoken][token]=self.LaplaceBigramCount[lasttoken][token]+1
                 lasttoken = token
+                self.total += 1
     
     def score(self, sentence):
         """
@@ -43,10 +44,13 @@ class LaplaceBigramLM(object):
         In Laplace Bigram language model, add-one smoothing technique applied for unseen words
         """
         score = 0.0
-        lasttoken = '&'
+        lasttoken = '<s>'
         self.additional = len(list(self.LaplaceUnigramCount.items()))
         for token in sentence:
-            count = self.LaplaceBigramCount[lasttoken][token]+1 # Add-one smoothing for unseen words
-            score = score + math.log(count) - math.log(self.LaplaceUnigramCount[token]+self.additional)
+            # Add-one smoothing for unseen words
+            count = self.LaplaceBigramCount[lasttoken][token]+1 
+            if count > 0:
+                score = score + math.log(count)
+            score = score - math.log(self.LaplaceUnigramCount[lasttoken] + self.additional)
             lasttoken = token
         return score

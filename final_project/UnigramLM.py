@@ -16,7 +16,7 @@ class UnigramLM(object):
         """
         
         self.unigramCounts = collections.defaultdict(lambda:0)
-        self.total=0
+        self.total = 0
         self.train(corpus)
         
     def train(self, corpus):

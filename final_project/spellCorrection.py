@@ -1,31 +1,24 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Jun 14 17:54:18 2018
-
 @author: yinjiang
 """
 
 import math
-from Datum import Datum 
-from Sentence import Sentence
 from HolbrookCorpus import HolbrookCorpus
 from EditModel import EditModel
 from SpellResult import SpellResult
-import types
-from UniformLM import UniformLM
 from UnigramLM import UnigramLM
-from LaplaceBigramLM import LaplaceBigramLM
-from LaplaceTrigramLM import LaplaceTrigramLM
 from LaplaceUnigramLM import LaplaceUnigramLM
+from LaplaceBigramLM import LaplaceBigramLM
 from StupidBackoffLM import StupidBackoffLM
-from KenserNeySmoothingLM import KenserNeySmoothingLM
+from StupidBackoffAddoneSmoothingLM import StupidBackoffSmoothLM
+from KatzBackoffGoodTuringDiscount import KatzBackoffGTLM
 from ModifiedKneserNeyLM import MKneserNeyLM
 
 # Modified version of Peter Norvig's spelling corrector
 # Here is the link:
 # https://norvig.com/spell-correct.html
-
-import re, collections
 
 def timeit(func):
     import time
@@ -141,7 +134,8 @@ def main():
       with open('ComparisonLM.log','w') as f:
           
           f.write('Comparison of different language models: \n')
-          
+          f.write('\n')
+          print ('Unigram Language Model Evaluation')
           f.write('Unigram Language Model: \n')
           unigramLM = UnigramLM(trainCorpus)
           unigramSpell = SpellCorrection(unigramLM, trainCorpus)
@@ -149,7 +143,8 @@ def main():
           f.write(str(unigramOutput))
           f.write('\nTime to run (seconds): ')
           f.write(str(t)+'\n')
-          
+          f.write('\n')
+          print ('Laplace Unigram Language Model Evaluation')
           f.write('Laplace Unigram Language Model: \n')
           LunigramLM = LaplaceUnigramLM(trainCorpus)
           LuniformSpell = SpellCorrection(LunigramLM, trainCorpus)
@@ -157,7 +152,8 @@ def main():
           f.write(str(LunigramOutput))
           f.write('\nTime to run (seconds): ')
           f.write(str(t)+'\n')
-          
+          f.write('\n')
+          print ('Laplace Bigram Language Model Evaluation')
           f.write('Laplace Bigram Language Model: \n')
           LbigramLM = LaplaceBigramLM(trainCorpus)
           LbigramSpell = SpellCorrection(LbigramLM, trainCorpus)
@@ -165,23 +161,8 @@ def main():
           f.write(str(LbigramOutput))
           f.write('\nTime to run (seconds): ')
           f.write(str(t)+'\n')
-          
-          f.write('Laplace Trigram Language Model: \n')
-          LtrigramLM = LaplaceTrigramLM(trainCorpus)
-          LtrigramSpell = SpellCorrection(LtrigramLM, trainCorpus)
-          LtrigramOutput,t = LtrigramSpell.evaluation(testCorpus)
-          f.write(str(LtrigramOutput))
-          f.write('\nTime to run (seconds): ')
-          f.write(str(t)+'\n')
-          
-          f.write('Modified Kneser Ney Smoothing Language Model: \n')
-          MKNLM = MKneserNeyLM(trainCorpus)
-          MKNSpell = SpellCorrection(MKNLM, trainCorpus)
-          MKNOutput,t = MKNSpell.evaluation(testCorpus)
-          f.write(str(MKNOutput))
-          f.write('\nTime to run (seconds): ')
-          f.write(str(t)+'\n')
-          
+          f.write('\n')
+          print ('Stupid Backoff Language Model Evaluation')
           f.write('Stupid Backoff Language Model: \n')
           SBOLM = StupidBackoffLM(trainCorpus)
           SBOSpell = SpellCorrection(SBOLM, trainCorpus)
@@ -189,7 +170,34 @@ def main():
           f.write(str(SBOOutput))
           f.write('\nTime to run (seconds): ')
           f.write(str(t)+'\n')
-
+          f.write('\n')
+          print ('Stupid Backoff with add-one smoothing Language Model Evaluation')
+          f.write('Stupid Backoff with add-one smoothing Language Model: \n')
+          SBOASLM = StupidBackoffSmoothLM(trainCorpus)
+          SBOASSpell = SpellCorrection(SBOASLM, trainCorpus)
+          SBOASOutput,t = SBOASSpell.evaluation(testCorpus)
+          f.write(str(SBOASOutput))
+          f.write('\nTime to run (seconds): ')
+          f.write(str(t)+'\n')
+          f.write('\n')
+          print ('Modified Kneser Ney Smoothing Language Model Evaluation')
+          f.write('Modified Kneser Ney Smoothing Language Model: \n')
+          MKNLM = MKneserNeyLM(trainCorpus)
+          MKNSpell = SpellCorrection(MKNLM, trainCorpus)
+          MKNOutput,t = MKNSpell.evaluation(testCorpus)
+          f.write(str(MKNOutput))
+          f.write('\nTime to run (seconds): ')
+          f.write(str(t)+'\n')
+          f.write('\n')
+          print ('Katz Backoff with Good-Turing smoothing Language Model Evaluation')
+          f.write('Katz Backoff with Good-Turing smoothing Language Model: \n')
+          KBOGTLM = KatzBackoffGTLM(trainCorpus)
+          KBOGTSpell = SpellCorrection(KBOGTLM, trainCorpus)
+          KBOGTOutput,t = KBOGTSpell.evaluation(testCorpus)
+          f.write(str(KBOGTOutput))
+          f.write('\nTime to run (seconds): ')
+          f.write(str(t)+'\n')
+          f.write('\n')
       
 if __name__ == "__main__":
     main()

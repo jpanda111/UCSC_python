@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Jun 13 13:01:57 2018
-
 @author: yinjiang
 """
 
@@ -224,10 +223,3 @@ from ModifiedKneserNeyLM import ModifiedKneserNeyLM
 gut_ngrams = (ngram for sent in gutenberg.sents() for ngram in ngrams(sent, 3, pad_left=True, pad_right=True, pad_symbol='<s>'))
 lm = ModifiedKneserNeyLM(3, gut_ngrams, end_pad_symbol='<s>')
 print(lm.score_sent(('This','is','a','sample','sentence','.')))
-      
-            
-                
-        
-        
-        
-        

@@ -23,17 +23,6 @@ class HolbrookCorpus(object):
         <ERR targ=That's> Thats </ERR> what <ERR targ=James> Jame </ERR>
         Returns sentence including a list of Datum(correct word, incorrect word)
         '''
-        line = line.strip()
-        line = line.lower()
-        line = line.replace('"','')
-        line = line.replace(',','')
-        line = line.replace('.','')
-        line = line.replace('!','')
-        line = line.replace('\'','')
-        line = line.replace(':','')
-        line = line.replace(';','')
-        if line == '':
-            return None
         processed_tokens = Sentence()
         processed_tokens.append(Datum("<s>")) # start symbol
         tokens = line.split()
@@ -73,6 +62,17 @@ class HolbrookCorpus(object):
         f = open(filename)
         self.corpus = []
         for line in f:
+            line = line.strip()
+            line = line.lower()
+            line = line.replace('"','')
+            line = line.replace(',','')
+            line = line.replace('.','')
+            line = line.replace('!','')
+            line = line.replace('\'','')
+            line = line.replace(':','')
+            line = line.replace(';','')
+            if line == '':
+                continue
             sentence= self.processLine(line)
             if sentence:
                 self.corpus.append(sentence)
@@ -103,6 +103,17 @@ class HolbrookCorpus(object):
         lines = contents.split('\n')
         self.corpus=[]
         for line in lines:
+            line = line.strip()
+            line = line.lower()
+            line = line.replace('"','')
+            line = line.replace(',','')
+            line = line.replace('.','')
+            line = line.replace('!','')
+            line = line.replace('\'','')
+            line = line.replace(':','')
+            line = line.replace(';','')
+            if line == '':
+                continue
             sentence = self.processLine(line)
             if sentence:
                 self.corpus.append(sentence)

@@ -7,7 +7,7 @@ Created on Wed Jun 13 10:42:41 2018
 
 import math, collections
 
-class StupidBackoffLM(object):
+class StupidBackoffSmoothLM(object):
     
     def __init__(self, corpus):
         
@@ -16,6 +16,7 @@ class StupidBackoffLM(object):
         """
 
         self.total = 0
+        self.additional = 0
         self.LaplaceBigramCount = collections.defaultdict(lambda: collections.defaultdict(lambda: 0))
         self.LaplaceUnigramCount = collections.defaultdict(lambda: 0)
         self.train(corpus)
@@ -39,18 +40,19 @@ class StupidBackoffLM(object):
         """
         Takes a list of strings and returns the log-probability of the sentence
         using the language model.
-        In stupid backoff, no smoothing techniques applied, lambda = 0.4
+        In stupid backoff, add-one smoothing techniques applied in unigram, lambda = 0.4
         """
         score = 0.0
         lasttoken = '<s>'
+        self.additional = len(list(self.LaplaceUnigramCount.items()))
         for token in sentence:
             biCount = self.LaplaceBigramCount[lasttoken][token]
             uniCount = self.LaplaceUnigramCount[token]
             if biCount > 0:
-                score = score + math.log(biCount) - math.log(self.LaplaceUnigramCount[lasttoken])
+                score = score + math.log(0.4) + math.log(biCount) - math.log(self.LaplaceUnigramCount[lasttoken])
             elif uniCount > 0:
-                score = score + math.log(0.4) + math.log(uniCount) - math.log(self.total)
+                score = score + math.log(0.4*0.4) + math.log(uniCount+1) - math.log(self.total+self.additional)
             else:
-                score = score + math.log(0.4*0.4) - math.log(self.total)
+                score = score + math.log(0.4*0.4*0.4) - math.log(self.total)
             lasttoken = token
         return score

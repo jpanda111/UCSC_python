@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Jun 13 10:35:24 2018
+Created on Wed Jun 13 10:42:41 2018
 
 @author: yinjiang
 """
 
 import math, collections
 
-class LaplaceTrigramLM(object):
+class StupidBackoffSmoothLM(object):
     
     def __init__(self, corpus):
         
         """
-        Trigram Languange Model with add-one smoothing is implemented.
+        Stupid Backoff Trigram Languange Model is implemented.
         """
-        
+
         self.total = 0
         self.additional = 0
         self.LaplaceTrigramCount = collections.defaultdict(lambda: collections.defaultdict(lambda: collections.defaultdict(lambda: 0)))
@@ -27,8 +27,9 @@ class LaplaceTrigramLM(object):
         Takes a corpus and trains your language model
         Compute any counts or other corpus statistics in this function
         """
-        lasttoken1 = '&'
         lasttoken2 = '#'
+        lasttoken1 = '&'
+        
         for sentence in corpus.corpus:
             for datum in sentence.data:
                 token = datum.word
@@ -38,19 +39,29 @@ class LaplaceTrigramLM(object):
                 self.total += 1
                 lasttoken2 = lasttoken1
                 lasttoken1 = token
-                
+    
     def score(self, sentence):
         """
         Takes a list of strings and returns the log-probability of the sentence
         using the language model.
+        In stupid backoff, add-one smoothing techniques applied in unigram, lambda = 0.4
         """
         score = 0.0
-        self.additional = len(self.LaplaceBigramCount.items())
-        lasttoken1 = '&'
         lasttoken2 = '#'
+        lasttoken1 = '$'
+        self.additional = len(list(self.LaplaceUnigramCount.items()))
         for token in sentence:
-            count = self.LaplaceTrigramCount[lasttoken2][lasttoken1][token] + 1
-            score = score + math.log(count)-math.log(self.LaplaceBigramCount[lasttoken2][lasttoken1] + self.additional)
+            triCount = self.LaplaceTrigramCount[lasttoken2][lasttoken1][token]
+            biCount = self.LaplaceBigramCount[lasttoken1][token]
+            uniCount = self.LaplaceUnigramCount[token]
+            if triCount > 0:
+                score = score + math.log(triCount) - math.log(self.LaplaceBigramCount[lasttoken2][lasttoken1])
+            elif biCount > 0:
+                score = score + math.log(0.4) + math.log(biCount) - math.log(self.LaplaceUnigramCount[lasttoken1])
+            elif uniCount > 0:
+                score = score + math.log(0.4*0.4) + math.log(uniCount+1) - math.log(self.total+self.additional)
+            else:
+                score = score + math.log(0.4*0.4*0.4) - math.log(self.total)
             lasttoken2 = lasttoken1
             lasttoken1 = token
         return score
