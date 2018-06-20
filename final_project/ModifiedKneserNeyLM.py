@@ -92,7 +92,7 @@ class MKneserNeyLM(object):
                 # avoid zero probability
                 biCount = 0.0001
             lasttokenCount = self.unigramCount[lasttoken]
-            # lasttokenCount = sum(self.bigramCount[lasttoken][*]) ????
+            # lasttokenCount = sum(self.bigramCount[lasttoken][*])
             if (lasttokenCount == 0):
                 lasttokenCount=999999
             # p_wn is continuation probability of token, not Pmle
@@ -122,12 +122,10 @@ class MKneserNeyLM(object):
             else:
                 discount = i-(i+1)*Y*num_with_count[i+1]/num_with_count[i]
             discounts.append(discount)
-        #if any(d for d in discounts[1:] if d <= 0):
-        try:
-            all(d for d in discounts[1:] if d > 0)
-        except:
-            '***Warning Messsage*** Negative Discount observed. '
-            'Need to check data set and find out rootcause!'
+        if any(d for d in discounts[1:] if d <= 0):
+            raise Exception(
+                    '***Warning*** Non-positive D observed. '
+                    'Dataset probably too small.')
         return discounts 
         
     def get_discount(self, discounts, count):

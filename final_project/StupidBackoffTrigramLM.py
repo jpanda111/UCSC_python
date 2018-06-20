@@ -7,7 +7,7 @@ Created on Wed Jun 13 10:42:41 2018
 
 import math, collections
 
-class StupidBackoffLM(object):
+class StupidBackoffTrigramLM(object):
     
     def __init__(self, corpus):
         

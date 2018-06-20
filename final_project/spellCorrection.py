@@ -13,8 +13,8 @@ from LaplaceUnigramLM import LaplaceUnigramLM
 from LaplaceBigramLM import LaplaceBigramLM
 from StupidBackoffLM import StupidBackoffLM
 from StupidBackoffAddoneSmoothingLM import StupidBackoffSmoothLM
-from KatzBackoffGoodTuringDiscount import KatzBackoffGTLM
 from ModifiedKneserNeyLM import MKneserNeyLM
+from KatzBackoffLM import KatzBackoffGTLM
 
 # Modified version of Peter Norvig's spelling corrector
 # Here is the link:
@@ -171,8 +171,8 @@ def main():
           f.write('\nTime to run (seconds): ')
           f.write(str(t)+'\n')
           f.write('\n')
-          print ('Stupid Backoff with add-one smoothing Language Model Evaluation')
-          f.write('Stupid Backoff with add-one smoothing Language Model: \n')
+          print ('Stupid Backoff with Add-one Smoothing Language Model Evaluation')
+          f.write('Stupid Backoff with Add-one Smoothing Language Model: \n')
           SBOASLM = StupidBackoffSmoothLM(trainCorpus)
           SBOASSpell = SpellCorrection(SBOASLM, trainCorpus)
           SBOASOutput,t = SBOASSpell.evaluation(testCorpus)
@@ -189,15 +189,14 @@ def main():
           f.write('\nTime to run (seconds): ')
           f.write(str(t)+'\n')
           f.write('\n')
-          print ('Katz Backoff with Good-Turing smoothing Language Model Evaluation')
-          f.write('Katz Backoff with Good-Turing smoothing Language Model: \n')
-          KBOGTLM = KatzBackoffGTLM(trainCorpus)
-          KBOGTSpell = SpellCorrection(KBOGTLM, trainCorpus)
-          KBOGTOutput,t = KBOGTSpell.evaluation(testCorpus)
-          f.write(str(KBOGTOutput))
+          print ('Katz Backoff Smoothing Language Model Evaluation')
+          f.write('Katz Backoff Smoothing Language Model: \n')
+          KBOLM = KatzBackoffGTLM(trainCorpus)
+          KBOSpell = SpellCorrection(KBOLM, trainCorpus)
+          KBOOutput,t = KBOSpell.evaluation(testCorpus)
+          f.write(str(KBOOutput))
           f.write('\nTime to run (seconds): ')
           f.write(str(t)+'\n')
-          f.write('\n')
       
 if __name__ == "__main__":
     main()

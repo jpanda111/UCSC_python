@@ -12,7 +12,7 @@ class StupidBackoffSmoothLM(object):
     def __init__(self, corpus):
         
         """
-        Stupid Backoff Trigram Languange Model is implemented.
+        Stupid Backoff Bigram Languange Model is implemented.
         """
 
         self.total = 0
@@ -49,10 +49,10 @@ class StupidBackoffSmoothLM(object):
             biCount = self.LaplaceBigramCount[lasttoken][token]
             uniCount = self.LaplaceUnigramCount[token]
             if biCount > 0:
-                score = score + math.log(0.4) + math.log(biCount) - math.log(self.LaplaceUnigramCount[lasttoken])
+                score = score + math.log(biCount) - math.log(self.LaplaceUnigramCount[lasttoken])
             elif uniCount > 0:
-                score = score + math.log(0.4*0.4) + math.log(uniCount+1) - math.log(self.total+self.additional)
+                score = score + math.log(0.4) + math.log(uniCount+1) - math.log(self.total+self.additional)
             else:
-                score = score + math.log(0.4*0.4*0.4) - math.log(self.total)
+                score = score + math.log(0.4*0.4) - math.log(self.total)
             lasttoken = token
         return score
